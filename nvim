@@ -1,0 +1,27 @@
+#!/bin/bash
+
+XSOCK=/tmp/.X11-unix
+XAUTH=/tmp/.docker.xauth
+chmod 644 $XAUTH
+xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge -
+
+FILE_PATH=$@
+DIR=$(dirname "${FILE_PATH}")
+FILE=$(basename "${FILE_PATH}")
+
+if [ "$DIR" = "." ]
+then
+  DIR=$(pwd)
+fi
+
+docker run \
+ -ti \
+ -v $XSOCK:$XSOCK \
+ -v $XAUTH:$XAUTH \
+ -e XAUTHORITY=$XAUTH \
+ -e DISPLAY=$DISPLAY \
+ -v="$HOME/.config/nvim:/root/.config/nvim" \
+ -v="$HOME/.local/share/nvim/:/root/.local/share/nvim" \
+ -v="$HOME/.fzf:/root/.fzf" \
+ -v="$DIR:/workspace" \
+ hrcarsan/nvim nvim $FILE
