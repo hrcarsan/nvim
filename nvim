@@ -14,14 +14,20 @@ then
   DIR=$(pwd)
 fi
 
+if [[ "$DIR" != /* ]]
+then
+ DIR="$(pwd)/$DIR"
+fi
+
 docker run \
  -ti \
  -v $XSOCK:$XSOCK \
  -v $XAUTH:$XAUTH \
  -e XAUTHORITY=$XAUTH \
  -e DISPLAY=$DISPLAY \
+ -e UGID="$(id -u $USER):$(id -g $USER)" \
  -v="$HOME/.config/nvim:/root/.config/nvim" \
  -v="$HOME/.local/share/nvim/:/root/.local/share/nvim" \
  -v="$HOME/.fzf:/root/.fzf" \
  -v="$DIR:/workspace" \
- hrcarsan/nvim nvim $FILE
+ hrcarsan/nvim:0.3.1 nvim $FILE
