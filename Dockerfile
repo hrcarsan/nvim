@@ -5,7 +5,7 @@ RUN apk update --no-cache \
  && apk add --no-cache \
     jansson yaml libxml2 php xclip git nodejs npm  python3 py-pip \
     bash gperf lua5.1-lpeg lua5.1-mpack gettext-dev libtermkey-dev libuv-dev libvterm-dev \
-    luajit-dev msgpack-c-dev unibilium-dev findutils perl-dev \
+    luajit-dev msgpack-c-dev unibilium-dev findutils perl-dev diffutils \
  ## install build dependencies ==========================
  && apk add --no-cache --virtual .build-deps \
       cmake make g++ curl python-dev python3-dev \
