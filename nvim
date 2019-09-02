@@ -1,9 +1,12 @@
 #!/bin/bash
 
 XSOCK=/tmp/.X11-unix
-XAUTH=/tmp/.docker.xauth
-chmod 644 $XAUTH > /dev/null 2>&1
-xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge - > /dev/null 2>&1
+XAUTH=/tmp/.docker.xauth-n
+
+if [ ! -f "$XAUTH" ]
+then
+  xauth nlist $DISPLAY | sed -e 's/^..../ffff/' | xauth -f $XAUTH nmerge - > /dev/null 2>&1
+fi
 
 FILE_PATH=$@
 DIR=$(dirname "${FILE_PATH}")
