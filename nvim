@@ -33,5 +33,6 @@ docker run \
  -v="$HOME/.config/nvim:/root/.config/nvim" \
  -v="$HOME/.local/share/nvim/:/root/.local/share/nvim" \
  -v="$HOME/.fzf:/root/.fzf" \
- -v="$DIR:/workspace" \
- hrcarsan/nvim:0.3.1 nvim $FILE
+ -v="$DIR:/workspace/$DIR" \
+ -w="/workspace/$DIR" \
+ hrcarsan/nvim:0.3.8 nvim $FILE
