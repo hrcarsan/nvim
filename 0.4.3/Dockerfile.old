@@ -1,0 +1,100 @@
+FROM debian:8-slim
+MAINTAINER Santiago Herrera Cardona <santiagohecar@gmail.com>
+
+RUN set -ex; \
+ apt-get update; \
+ # install build dependencies
+ apt-get install -y \
+    curl \
+    g++ \
+    wget \
+    make \
+    cmake \
+    autoconf \
+    automake \
+    ca-certificates \
+    unzip \
+    python3-dev \
+    python-dev \
+    pkg-config \
+    --no-install-recommends; \
+ savedAptMark="$(apt-mark showmanual)"; \
+ # install runtime dependencies
+ apt-get install -y \
+    git \
+    ninja-build \
+    gettext \
+    libtool \
+    libtool-bin \
+    python-pip \
+    python3-pip \
+    php5 \
+    --no-install-recommends; \
+ ## install nvim =======================================
+ export NVIM_VERSION=0.4.3 \
+ && wget https://github.com/neovim/neovim/archive/v$NVIM_VERSION.tar.gz \
+ && tar -xzvf v$NVIM_VERSION.tar.gz \
+ && cd neovim-$NVIM_VERSION/ \
+ && make CMAKE_EXTRA_FLAGS="-DCMAKE_INSTALL_PREFIX=/usr/local/neovim-$NVIM_VERSION -DCMAKE_BUILD_TYPE=RelWithDebInfo" \
+ && make install \
+ && ln -s /usr/local/neovim-$NVIM_VERSION/bin/nvim /usr/bin/nvim \
+ && pip2 install --upgrade pip \
+ && pip3 install --upgrade pip \
+ && pip2 install --upgrade neovim \
+ && pip3 install --upgrade neovim \
+ ## install node.js ==================================
+ && cd /tmp \
+ && VERSION=v13.12.0 \
+ && DISTRO=linux-x64 \
+ && mkdir -p /usr/local/lib/nodejs \
+ && wget http://nodejs.org/dist/$VERSION/node-$VERSION-$DISTRO.tar.gz \
+ && tar -zxvf node-$VERSION-$DISTRO.tar.gz -C /usr/local/lib/nodejs \
+ && ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/node /usr/bin/node \
+ && ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npm /usr/bin/npm \
+ && ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npx /usr/bin/npx \
+ && npm install -g neovim \
+ ## install ripgrep ==================================
+ && cd /tmp \
+ && export RG_VERSION=0.8.1-x86_64-unknown-linux-musl \
+ && wget https://github.com/BurntSushi/ripgrep/releases/download/0.8.1/ripgrep-$RG_VERSION.tar.gz \
+ && tar -xzvf ripgrep-$RG_VERSION.tar.gz \
+ && cd ripgrep-$RG_VERSION/ \
+ && mv rg /usr/bin/ \
+ ## install universal-ctags ==========================
+ && cd /tmp \
+ && git clone https://github.com/universal-ctags/ctags.git \
+ && cd ctags \
+ && ./autogen.sh \
+ && ./configure \
+ && make \
+ && make install; \
+ # clean
+ apt-mark auto '.*' > /dev/null; \
+	[ -z "$savedAptMark" ] || apt-mark manual $savedAptMark; \
+	find /usr/local -type f -executable -exec ldd '{}' ';' \
+		| awk '/=>/ { print $(NF-1) }' \
+		| sort -u \
+		| xargs -r dpkg-query --search \
+		| cut -d: -f1 \
+		| sort -u \
+		| xargs -r apt-mark manual \
+	; \
+ apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false; \
+ rm -rf /tmp/*; \
+ rm -r /var/lib/apt/lists/*;
+
+RUN set -ex; \
+ apt-get update; \
+ apt-get install -y php5 git xclip
+
+# Set the locale
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y locales
+
+RUN sed -i -e 's/# en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen && \
+    dpkg-reconfigure --frontend=noninteractive locales && \
+    update-locale LANG=en_US.UTF-8
+
+ENV LANG en_US.UTF-8 
+
+
+ WORKDIR /workspace
