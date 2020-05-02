@@ -30,10 +30,11 @@ docker run \
  -e XAUTHORITY=$XAUTH \
  -e DISPLAY=$DISPLAY \
  -e UGID="$(id -u $USER):$(id -g $USER)" \
+ -e BAT_THEME="TwoDark" \
  -v="$HOME/.config/nvim:/root/.config/nvim" \
  -v="$HOME/.config/coc:/root/.config/coc" \
  -v="$HOME/.local/share/nvim/:/root/.local/share/nvim" \
  -v="$HOME/.fzf:/root/.fzf" \
  -v="$DIR:/workspace/$DIR" \
  -w="/workspace/$DIR" \
- hrcarsan/nvim:0.4.3 nvim $FILE
+ hrcarsan/nvim:0.4.3-2 nvim $FILE

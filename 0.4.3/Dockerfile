@@ -36,6 +36,7 @@ RUN set -ex; \
  && ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npm /usr/bin/npm \
  && ln -s /usr/local/lib/nodejs/node-$VERSION-$DISTRO/bin/npx /usr/bin/npx \
  && npm install -g neovim \
+ && npm install --global git+https://github.com/Perlence/tstags.git \
  ## install ripgrep ==================================
  && cd /tmp \
  && export RG_VERSION=0.8.1-x86_64-unknown-linux-musl \
@@ -56,5 +57,14 @@ RUN set -ex; \
  && rm -r /var/lib/apt/lists/*;
 
 ENV LANG en_US.UTF-8
+
+Run apt-get update \
+&& cd /tmp \
+&& wget https://github.com/sharkdp/bat/releases/download/v0.13.0/bat_0.13.0_amd64.deb \
+&& dpkg -i bat_0.13.0_amd64.deb
+
+Run apt-get update && apt install silversearcher-ag
+
+Run ln -s /usr/local/lib/nodejs/node-v13.12.0-linux-x64/lib/node_modules/tstags/bin/tstags.js /bin/tstags
 
 WORKDIR /workspace
