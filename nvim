@@ -37,4 +37,4 @@ docker run \
  -v="$HOME/.fzf:/root/.fzf" \
  -v="$DIR:/workspace/$DIR" \
  -w="/workspace/$DIR" \
- hrcarsan/nvim:0.4.3-2 nvim $FILE
+ hrcarsan/nvim:0.4.3 nvim $FILE
